@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="apple-touch-icon" sizes="57x57" href="{{STATIC_URL}}img/apple-touch-icon-57x57.png">
+        <link rel="apple-touch-icon" sizes="60x60" href="{{STATIC_URL}}img/apple-touch-icon-60x60.png">
+        <link rel="apple-touch-icon" sizes="72x72" href="{{STATIC_URL}}img/apple-touch-icon-72x72.png">
+        <link rel="apple-touch-icon" sizes="76x76" href="{{STATIC_URL}}img/apple-touch-icon-76x76.png">
+        <link rel="apple-touch-icon" sizes="114x114" href="{{STATIC_URL}}img/apple-touch-icon-114x114.png">
+        <link rel="apple-touch-icon" sizes="120x120" href="{{STATIC_URL}}img/apple-touch-icon-120x120.png">
+        <link rel="apple-touch-icon" sizes="144x144" href="{{STATIC_URL}}img/apple-touch-icon-144x144.png">
+        <link rel="apple-touch-icon" sizes="152x152" href="{{STATIC_URL}}img/apple-touch-icon-152x152.png">
+        <link rel="apple-touch-icon" sizes="180x180" href="{{STATIC_URL}}img/apple-touch-icon-180x180.png">
+        <link rel="icon" type="image/png" href="{{STATIC_URL}}img/favicon-32x32.png" sizes="32x32">
+        <link rel="icon" type="image/png" href="{{STATIC_URL}}img/android-chrome-192x192.png" sizes="192x192">
+        <link rel="icon" type="image/png" href="{{STATIC_URL}}img/favicon-96x96.png" sizes="96x96">
+        <link rel="icon" type="image/png" href="{{STATIC_URL}}img/favicon-16x16.png" sizes="16x16">
+        <link rel="manifest" href="{{STATIC_URL}}img/manifest.json">
+        <meta name="msapplication-TileColor" content="#da532c">
+        <meta name="msapplication-TileImage" content="{{STATIC_URL}}img/mstile-144x144.png">
+        <meta name="theme-color" content="#ffffff">
+        <title>deepdreams</title>
+        <link href="{{STATIC_URL}}css/bootstrap.min.css" rel="stylesheet">
+        <link href="{{STATIC_URL}}css/dreamin.css" rel="stylesheet">
+    </head>
+    <body>
+        <div class="container">
+            <form action="/deepdreams/begindream/" method="POST" id="dream-form" enctype="multipart/form-data">{% csrf_token %}
+                <h2 class="dream-form-heading">deepdreams are made of these</h2>
+                <div class="form-group">
+                    <label class="col-sm-3 control-label">Image</label>
+                    <div class="col-sm-offset-3">
+                        {{ form.picture }}
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-3 control-label">Dreamtype</label>
+                    <div class="col-sm-offset-3">
+                        {{ form.dreamtype }}
+                    </div>
+                </div>
+                <div class="form-group">
+                    <input type="submit" class="btn btn-lg btn-primary btn-block" value="Dream">
+                </div>
+            </form>
+            <div id="results"></div>
+<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+    <input type="hidden" name="cmd" value="_s-xclick">
+    <input type="hidden" name="encrypted" value="-----BEGIN PKCS7-----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-----END PKCS7-----">
+    <input type="submit" class="btn btn-info" name="submit" alt="PayPal - The safer, easier way to pay online!" value="Donate">
+</form>
+        </div> <!-- /container -->
+        <script src="{{STATIC_URL}}js/jquery-1.11.3.min.js"></script>
+        <script src={{STATIC_URL}}js/bootstrap.min.js></script>
+        <script src="{{ STATIC_URL }}js/dreamin.js"></script>
+    </body>
+</html>
