@@ -9,8 +9,9 @@ import numpy as np
 import scipy.ndimage as nd
 import PIL.Image
 from google.protobuf import text_format
-
 import caffe
+
+from celery import current_task
 
 def showimg(a, mode, fmt='png'):
     a = np.uint8(np.clip(a, 0, 255))
@@ -60,6 +61,7 @@ def preprocess(net, img):
         return np.float32(np.rollaxis(img, 2)[::-1]) - net.transformer.mean['data']
     except ValueError:
         return np.float32(np.rollaxis(img, 1)[::-1]) - net.transformer.mean['data']
+
 def deprocess(net, img):
     return np.dstack((img + net.transformer.mean['data'])[::-1])
 
@@ -86,11 +88,15 @@ def make_step(net, step_size=1.5, end='inception_4c/output', jitter=32, clip=Tru
         bias = net.transformer.mean['data']
         src.data[:] = np.clip(src.data, -bias, 255-bias)
 
-def deepdream(net, base_img, iter_n=10, octave_n=4, octave_scale=1.4, end='inception_4c/output', clip=True, **step_params):
+def deepdream(task_id, net, base_img, iter_n=10, octave_n=4, octave_scale=1.4, end='inception_4c/output', clip=True, **step_params):
+    # set for celery task progress updates
+    progress = 0
     # prepare base images for all octaves
     octaves = [preprocess(net, base_img)]
     for i in xrange(octave_n-1):
         octaves.append(nd.zoom(octaves[-1], (1, 1.0/octave_scale,1.0/octave_scale), order=1))
+        progress = ((i+1.0)/(octave_n))*10+5
+        current_task.update_state(task_id, 'PROGRESS', {'progress': progress})
     
     src = net.blobs['data']
     detail = np.zeros_like(octaves[-1]) # allocate image for network-produced details
@@ -105,15 +111,9 @@ def deepdream(net, base_img, iter_n=10, octave_n=4, octave_scale=1.4, end='incep
         src.data[0] = octave_base+detail
         for i in xrange(iter_n):
             make_step(net, end=end, clip=clip, **step_params)
-            
-            # visualization
-            #vis = deprocess(net, src.data[0])
-            #if not clip: # adjust image contrast if clipping is disabled
-            #    vis = vis*(255.0/np.percentile(vis, 99.98))
-            # showarray(vis)
-            #print octave, i, end, vis.shape
-            # clear_output(wait=True)
-            
+            progress = 15+85/(octave_n*iter_n-1.0)*(iter_n*octave+i)
+            current_task.update_state(task_id, 'PROGRESS', {'progress': progress})
+
         # extract details produced on the current octave
         detail = src.data[0]-octave_base
     # returning the resulting image
